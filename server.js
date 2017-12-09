@@ -7,9 +7,19 @@ var path = require("path");
 var app = express();
 
 // Specify the port.
-var port = 3000;
+var port = 8080;
 
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.text());
 app.use(bodyParser.json({ type: "application/vnd.api+json" }));
+
+// default, catch-all route that leads to home.html which displays the home page.
+app.get("*", function(request, response) {
+	response.sendFile(path.join(__dirname, "app/public/home.html"));
+});
+
+// Make server listen
+app.listen(port, function() {
+    console.log("Kelvin's App listening on PORT: " + port);
+});
