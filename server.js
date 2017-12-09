@@ -14,12 +14,14 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.text());
 app.use(bodyParser.json({ type: "application/vnd.api+json" }));
 
-// default, catch-all route that leads to home.html which displays the home page.
-app.use( function(request, response) {
-	response.sendFile(path.join(__dirname, "app/public/home.html"));
-});
+require('./app/routing/htmlRoutes.js')(app);
 
-$.("#survey")
+// default, catch-all route that leads to home.html which displays the home page.
+// app.use( function(request, response) {
+// 	response.sendFile(path.join(__dirname, "app/public/home.html"));
+// });
+
+// $.("#survey")
 
 // Make server listen
 app.listen(port, function() {
