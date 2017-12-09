@@ -19,6 +19,8 @@ app.get("*", function(request, response) {
 	response.sendFile(path.join(__dirname, "app/public/home.html"));
 });
 
+$.("#survey")
+
 // Make server listen
 app.listen(port, function() {
     console.log("Kelvin's App listening on PORT: " + port);
