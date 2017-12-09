@@ -10,3 +10,6 @@ var friends = [
 		3]
 	}
 ];
+
+// use this data in other js files
+module.exports = friends;

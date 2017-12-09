@@ -15,7 +15,7 @@ app.use(bodyParser.text());
 app.use(bodyParser.json({ type: "application/vnd.api+json" }));
 
 // default, catch-all route that leads to home.html which displays the home page.
-app.get("*", function(request, response) {
+app.use( function(request, response) {
 	response.sendFile(path.join(__dirname, "app/public/home.html"));
 });
 
