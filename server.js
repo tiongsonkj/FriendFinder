@@ -14,6 +14,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.text());
 app.use(bodyParser.json({ type: "application/vnd.api+json" }));
 
+// display first because we want to display this in html pages
+require('./app/routing/apiRoutes.js')(app);
+
 require('./app/routing/htmlRoutes.js')(app);
 
 // default, catch-all route that leads to home.html which displays the home page.
