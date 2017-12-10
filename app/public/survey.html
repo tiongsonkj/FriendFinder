@@ -9,6 +9,9 @@
 	<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js" integrity="sha384-vFJXuSJphROIrBnz7yo7oB41mKfc8JzQZiCq4NCceLEaO4IHwicKwpJf9c9IpFgh" crossorigin="anonymous"></script>
 	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-beta.2/js/bootstrap.min.js" integrity="sha384-alpBpkh1PFOepccYVYDB4do5UnbKysX5WZXm3XxPqe5iKTfUKjNkCk9SaVuEZflJ" crossorigin="anonymous"></script>
+
+	<!-- JQUERY -->
+	<script src="https://code.jquery.com/jquery-3.1.0.min.js"></script>
 </head>
 <body>
 	<div class="container">
@@ -20,10 +23,10 @@
 		<form>
 			<div class="form-group">
 				<label for="exampleFormControlInput1">Name (required)</label>
-				<input type="email" class="form-control" id="exampleFormControlInput1" placeholder="">
+				<input type="email" class="form-control" id="name" placeholder="">
 
 				<label for="exampleFormControlInput1">Link to Photo Image (required)</label>
-				<input type="email" class="form-control" id="exampleFormControlInput1" placeholder="">
+				<input type="email" class="form-control" id="photo" placeholder="">
 				<hr>
 			</div>
 
@@ -148,9 +151,51 @@
 				</select>
 				<br>
 
-				<button type="button" class="btn btn-primary btn-lg btn-block">Submit</button>
+				<button type="button" class="btn btn-primary btn-lg btn-block submit">Submit</button>
 			</div>
 		</form>
+
+		<p><a href="/api/friends">API Friends List</a> | <a href="https://github.com/tiongsonkj/FriendFinder">GitHub Repo</a></p>
 	</div>
+
+	<script type="text/javascript">
+		$(".submit").on("click", function(){
+			var newFriend = {
+				name: $("#name").val().trim(),
+				photo: $("#photo").val().trim(),
+				scores: [
+					$("#q1").val().trim(),
+					$("#q2").val().trim(),
+					$("#q3").val().trim(),
+					$("#q4").val().trim(),
+					$("#q5").val().trim(),
+					$("#q6").val().trim(),
+					$("#q7").val().trim(),
+					$("#q8").val().trim(),
+					$("#q9").val().trim(),
+					$("#q10").val().trim()
+				]
+			};
+
+			console.log(newFriend);
+			console.log(newFriend.scores);
+
+			var scoresArray = newFriend.scores;
+
+			var userScores = scoresArray.split(',').map(function(item) {
+				return parseInt(item, 10);
+			});
+			
+			console.log(userScores);
+
+			// var currentURL = window.location.origin;
+
+			$.post("/api/friends", newFriend, function(data){
+
+				// this is where we compare the data and alert the user which friend he/she matches with
+				alert("We made a new friend!");
+			});
+		});
+	</script>
 </body>
 </html>
