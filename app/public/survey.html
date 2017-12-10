@@ -158,8 +158,31 @@
 		<p><a href="/api/friends">API Friends List</a> | <a href="https://github.com/tiongsonkj/FriendFinder">GitHub Repo</a></p>
 	</div>
 
+	<div class="modal fade" id="results-modal" role="dialog" tabindex="-1">
+		<div class="modal-dialog" role="document">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">x</button>
+					<h2 class="modal-title">
+						<strong>Best Match</strong>
+					</h2>
+				</div>
+
+				<div class="modal-body">
+					<h2 id="match-name"></h2>
+					<img id="match-img" src="" alt="Best Match">
+				</div>
+
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	<script type="text/javascript">
 		$(".submit").on("click", function(){
+			event.preventDefault();
+
 			var newFriend = {
 				name: $("#name").val().trim(),
 				photo: $("#photo").val().trim(),
@@ -180,20 +203,26 @@
 			console.log(newFriend);
 			console.log(newFriend.scores);
 
-			var scoresArray = newFriend.scores;
+			// var scoresArray = newFriend.scores;
 
-			var userScores = scoresArray.split(',').map(function(item) {
-				return parseInt(item, 10);
-			});
+			// var userScores = scoresArray.split(',').map(function(item) {
+			// 	return parseInt(item, 10);
+			// });
 			
-			console.log(userScores);
+			// console.log(userScores);
 
 			// var currentURL = window.location.origin;
 
 			$.post("/api/friends", newFriend, function(data){
 
 				// this is where we compare the data and alert the user which friend he/she matches with
-				alert("We made a new friend!");
+				// console.log(data);
+				// alert("We made a new friend!");
+
+				$("#match-name").text(data.name);
+				$("#match-img").attr("src", data.photo);
+
+				$("#results-modal").modal("toggle");
 			});
 		});
 	</script>
