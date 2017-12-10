@@ -150,16 +150,20 @@
 					<option value="5">5 (Strongly Agree)</option>
 				</select>
 				<br>
-
-				<button type="button" class="btn btn-primary btn-lg btn-block submit">Submit</button>
+	
+				<!-- this button should submit the survey to the api AND it should display the modal -->
+				<button type="button" class="btn btn-primary btn-lg btn-block submit" data-toggle="modal" data-target="#results-modal">Submit</button>
 			</div>
 		</form>
 
 		<p><a href="/api/friends">API Friends List</a> | <a href="https://github.com/tiongsonkj/FriendFinder">GitHub Repo</a></p>
 	</div>
 
-	<div class="modal fade" id="results-modal" role="dialog" tabindex="-1">
-		<div class="modal-dialog" role="document">
+	<!-- modal -->
+	<div class="modal fade" id="results-modal" role="dialog">
+		<div class="modal-dialog">
+
+			<!-- modal content -->
 			<div class="modal-content">
 				<div class="modal-header">
 					<button type="button" class="close" data-dismiss="modal">x</button>
@@ -187,44 +191,87 @@
 				name: $("#name").val().trim(),
 				photo: $("#photo").val().trim(),
 				scores: [
-					$("#q1").val().trim(),
-					$("#q2").val().trim(),
-					$("#q3").val().trim(),
-					$("#q4").val().trim(),
-					$("#q5").val().trim(),
-					$("#q6").val().trim(),
-					$("#q7").val().trim(),
-					$("#q8").val().trim(),
-					$("#q9").val().trim(),
-					$("#q10").val().trim()
+					parseInt($("#q1").val().trim()),
+					parseInt($("#q2").val().trim()),
+					parseInt($("#q3").val().trim()),
+					parseInt($("#q4").val().trim()),
+					parseInt($("#q5").val().trim()),
+					parseInt($("#q6").val().trim()),
+					parseInt($("#q7").val().trim()),
+					parseInt($("#q8").val().trim()),
+					parseInt($("#q9").val().trim()),
+					parseInt($("#q10").val().trim())
 				]
 			};
 
 			console.log(newFriend);
-			console.log(newFriend.scores);
 
-			// var scoresArray = newFriend.scores;
-
-			// var userScores = scoresArray.split(',').map(function(item) {
-			// 	return parseInt(item, 10);
-			// });
-			
-			// console.log(userScores);
-
-			// var currentURL = window.location.origin;
+			console.log("Scores of user: " + newFriend.scores);
 
 			$.post("/api/friends", newFriend, function(data){
 
 				// this is where we compare the data and alert the user which friend he/she matches with
-				// console.log(data);
-				// alert("We made a new friend!");
 
 				$("#match-name").text(data.name);
 				$("#match-img").attr("src", data.photo);
 
 				$("#results-modal").modal("toggle");
 			});
+
+			$.ajax({url: "http://localhost:8080" + "/api/friends", method: "GET"})
+			.done(function(friendsArray) {
+				var bestMatch = {
+					score: null,
+					index: -1
+				}
+
+				for(var i = 0; i < friendsArray.length - 1; i++) {
+					// console.log(friendsArray[i]);
+					console.log(friendsArray[i].scores);
+
+					var totalDifference = 0;
+
+					for(var j = 0; j < friendsArray[i].scores.length; j++) {
+						totalDifference += Math.abs(newFriend.scores[j] - friendsArray[i].scores[j]);
+					}
+
+					console.log("Your total difference with " + friendsArray[i].name + " is: " + totalDifference);
+
+					if(bestMatch.index === -1) {
+						bestMatch.index = 1;
+						bestMatch.score = totalDifference;
+					}			
+					else if(totalDifference < bestMatch.score) {
+						bestMatch.index = i;
+						bestMatch.score = totalDifference;
+					}
+				}
+
+				console.log("best match index: " + bestMatch.index);
+				console.log("best match score: " + bestMatch.score);
+				console.log("best match name: " + friendsArray[bestMatch.index].name);
+				console.log("best match photo: " + friendsArray[bestMatch.index].photo);
+
+				$("#match-name").text(friendsArray[bestMatch.index].name);
+				$("#match-img").attr("src", friendsArray[bestMatch.index].photo);
+			});
 		});
+		// $.ajax({url: "http://localhost:8080" + "/api/friends", method: "GET"})
+		// .done(function(friendsArray) {
+		// 	for(var i = 0; i < friendsArray.length; i++) {
+		// 		// console.log(friendsArray[i]);
+		// 		console.log(friendsArray[i].scores);
+
+		// 		var totalDifference = 0;
+
+		// 		for(var j = 0; j < friendsArray[i].scores.length; j++) {
+		// 			totalDifference += Math.abs(newFriend.scores[j] - friendsArray[i].score[j]);
+		// 			console.log(totalDifference);
+		// 		}			
+		// 	}
+		// });
+
+
 	</script>
 </body>
 </html>

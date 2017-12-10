@@ -19,13 +19,6 @@ require('./app/routing/apiRoutes.js')(app);
 
 require('./app/routing/htmlRoutes.js')(app);
 
-// default, catch-all route that leads to home.html which displays the home page.
-// app.use( function(request, response) {
-// 	response.sendFile(path.join(__dirname, "app/public/home.html"));
-// });
-
-// $.("#survey")
-
 // Make server listen
 app.listen(port, function() {
     console.log("Kelvin's App listening on PORT: " + port);
