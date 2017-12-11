@@ -20,6 +20,7 @@
 		<hr>
 		<h2>About You</h2>
 
+		<!-- form of name and photo -->
 		<form>
 			<div class="form-group">
 				<label for="exampleFormControlInput1">Name (required)</label>
@@ -30,6 +31,7 @@
 				<hr>
 			</div>
 
+			<!-- beginning of survey questions -->
 			<div class="form-group">
 				<h2>Question 1</h2>
 				<label for="exampleFormControlSelect1">You are an introvert.</label>
@@ -184,94 +186,91 @@
 		</div>
 	</div>
 	<script type="text/javascript">
+		// on the submit button, run this function
 		$(".submit").on("click", function(){
 			event.preventDefault();
 
-			var newFriend = {
-				name: $("#name").val().trim(),
-				photo: $("#photo").val().trim(),
-				scores: [
-					parseInt($("#q1").val().trim()),
-					parseInt($("#q2").val().trim()),
-					parseInt($("#q3").val().trim()),
-					parseInt($("#q4").val().trim()),
-					parseInt($("#q5").val().trim()),
-					parseInt($("#q6").val().trim()),
-					parseInt($("#q7").val().trim()),
-					parseInt($("#q8").val().trim()),
-					parseInt($("#q9").val().trim()),
-					parseInt($("#q10").val().trim())
-				]
-			};
+			// flag for the questions
+			var flag = true;
 
-			console.log(newFriend);
-
-			console.log("Scores of user: " + newFriend.scores);
-
-			$.post("/api/friends", newFriend, function(data){
-
-				// this is where we compare the data and alert the user which friend he/she matches with
-
-				$("#match-name").text(data.name);
-				$("#match-img").attr("src", data.photo);
-
-				$("#results-modal").modal("toggle");
+			// if any value of form control is blank, then the flag will be false
+			$(".form-control").each(function() {
+				if($(this).val() === "") {
+					flag = false;
+				}
 			});
 
-			$.ajax({url: "http://localhost:8080" + "/api/friends", method: "GET"})
-			.done(function(friendsArray) {
-				var bestMatch = {
-					score: null,
-					index: -1
-				}
+			// if the flag is true, then do all of that. Else, alert user to fill out questions.
+			if(flag) {
+				// create a new object newFriend
+				var newFriend = {
+					name: $("#name").val().trim(),
+					photo: $("#photo").val().trim(),
+					scores: [
+						parseInt($("#q1").val().trim()),
+						parseInt($("#q2").val().trim()),
+						parseInt($("#q3").val().trim()),
+						parseInt($("#q4").val().trim()),
+						parseInt($("#q5").val().trim()),
+						parseInt($("#q6").val().trim()),
+						parseInt($("#q7").val().trim()),
+						parseInt($("#q8").val().trim()),
+						parseInt($("#q9").val().trim()),
+						parseInt($("#q10").val().trim())
+					]
+				};
 
-				for(var i = 0; i < friendsArray.length - 1; i++) {
-					// console.log(friendsArray[i]);
-					console.log(friendsArray[i].scores);
+				// post the new friend to api friends
+				$.post("/api/friends", newFriend, function(data){
 
-					var totalDifference = 0;
+				});
 
-					for(var j = 0; j < friendsArray[i].scores.length; j++) {
-						totalDifference += Math.abs(newFriend.scores[j] - friendsArray[i].scores[j]);
+				// call ajax to get the friends api
+				$.ajax({url: "http://localhost:8080" + "/api/friends", method: "GET"})
+				.done(function(friendsArray) {
+					var bestMatch = {
+						score: null,
+						index: -1
 					}
 
-					console.log("Your total difference with " + friendsArray[i].name + " is: " + totalDifference);
+					// loop through all of the array except the newFriend
+					for(var i = 0; i < friendsArray.length - 1; i++) {
+						var totalDifference = 0;
 
-					if(bestMatch.index === -1) {
-						bestMatch.index = 1;
-						bestMatch.score = totalDifference;
-					}			
-					else if(totalDifference < bestMatch.score) {
-						bestMatch.index = i;
-						bestMatch.score = totalDifference;
+						// loop through the array of scores of each friend in the array.
+						for(var j = 0; j < friendsArray[i].scores.length; j++) {
+							totalDifference += Math.abs(newFriend.scores[j] - friendsArray[i].scores[j]);
+						}
+
+						// console.log("Your total difference with " + friendsArray[i].name + " is: " + totalDifference);
+
+						if(bestMatch.index === -1) {
+							bestMatch.index = 1;
+							bestMatch.score = totalDifference;
+						}			
+						else if(totalDifference < bestMatch.score) {
+							bestMatch.index = i;
+							bestMatch.score = totalDifference;
+						}
 					}
-				}
 
-				console.log("best match index: " + bestMatch.index);
-				console.log("best match score: " + bestMatch.score);
-				console.log("best match name: " + friendsArray[bestMatch.index].name);
-				console.log("best match photo: " + friendsArray[bestMatch.index].photo);
+					// console.log("best match index: " + bestMatch.index);
+					// console.log("best match score: " + bestMatch.score);
+					// console.log("best match name: " + friendsArray[bestMatch.index].name);
+					// console.log("best match photo: " + friendsArray[bestMatch.index].photo);
 
-				$("#match-name").text(friendsArray[bestMatch.index].name);
-				$("#match-img").attr("src", friendsArray[bestMatch.index].photo);
-			});
+					// fill the modal with the name of the best matched friend
+					$("#match-name").text(friendsArray[bestMatch.index].name);
+
+					// fill the modal with the image of the best matched friend
+					$("#match-img").attr("src", friendsArray[bestMatch.index].photo);
+				});
+			} else {
+				alert("fill out all questions");
+				$("#match-name").text("Please fill out all questions!");
+				$("#match-img").attr("src", "");
+			}
 		});
-		// $.ajax({url: "http://localhost:8080" + "/api/friends", method: "GET"})
-		// .done(function(friendsArray) {
-		// 	for(var i = 0; i < friendsArray.length; i++) {
-		// 		// console.log(friendsArray[i]);
-		// 		console.log(friendsArray[i].scores);
-
-		// 		var totalDifference = 0;
-
-		// 		for(var j = 0; j < friendsArray[i].scores.length; j++) {
-		// 			totalDifference += Math.abs(newFriend.scores[j] - friendsArray[i].score[j]);
-		// 			console.log(totalDifference);
-		// 		}			
-		// 	}
-		// });
-
-
 	</script>
 </body>
 </html>
